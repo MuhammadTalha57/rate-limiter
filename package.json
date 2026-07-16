@@ -12,12 +12,14 @@
 		"lint:fix": "biome check . --write"
 	},
 	"dependencies": {
+		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"supertest": "^7.2.2",
 		"typescript": "^7.0.2",
 		"vitest": "^4.1.10"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.4"
+		"@biomejs/biome": "^2.5.4",
+		"@types/node": "^26.1.1"
 	}
 }

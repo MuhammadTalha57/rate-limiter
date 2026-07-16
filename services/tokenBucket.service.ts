@@ -1,17 +1,16 @@
+import { CAPACITY, REFILL_RATE } from "../config/tokenBucket.config.js";
 import {
 	getBucket,
 	setBucket,
 } from "../repositories/memoryStore.repository.js";
 
-const capacity = 100;
-const refillRate = 5;
 
 export function check(key: string): { allowed: boolean; remaining: number } {
 	const { tokens, lastUpdated } = getBucket(key);
 	const elapsedSeconds = Math.floor((Date.now() - lastUpdated) / 1000);
 	const newTokenCount = Math.min(
-		capacity,
-		tokens + refillRate * elapsedSeconds,
+		CAPACITY,
+		tokens + REFILL_RATE * elapsedSeconds,
 	);
 	if (newTokenCount >= 1) {
 		// Consume Token
