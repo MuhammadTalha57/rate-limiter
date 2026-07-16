@@ -1,18 +1,23 @@
 {
-  "name": "rate-limiter",
-  "version": "0.0.1",
-  "description": "A generic and scalable rate limiter",
-  "license": "ISC",
-  "author": "Muhammad Talha",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "express": "^5.2.1",
-    "supertest": "^7.2.2",
-    "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
-  }
+	"name": "rate-limiter",
+	"version": "0.0.1",
+	"description": "A generic and scalable rate limiter",
+	"license": "ISC",
+	"author": "Muhammad Talha",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write"
+	},
+	"dependencies": {
+		"express": "^5.2.1",
+		"supertest": "^7.2.2",
+		"typescript": "^7.0.2",
+		"vitest": "^4.1.10"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.4"
+	}
 }
