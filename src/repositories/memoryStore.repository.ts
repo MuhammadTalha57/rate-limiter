@@ -1,12 +1,13 @@
 import { logger } from "../config/logger.js";
 
-let inMemoryStore: Record<string, { tokens: number; lastUpdated: number }> =
-	{};
+let inMemoryStore: Record<string, { tokens: number; lastUpdated: number }> = {};
 
-export function get(key: string): {
-	tokens: number;
-	lastUpdated: number;
-} | undefined {
+export function get(key: string):
+	| {
+			tokens: number;
+			lastUpdated: number;
+	  }
+	| undefined {
 	logger.debug(`Getting key:${key} from inMemoryStore`);
 	const bucket = inMemoryStore[key];
 	return bucket;
