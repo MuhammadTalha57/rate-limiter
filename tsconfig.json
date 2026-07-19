@@ -1,6 +1,6 @@
 {
 	// "extends": "./node_modules/@tsconfig/recommended/tsconfig.json",
-	"include": ["src", "test"],
+	"include": ["src", "tests"],
 	"compilerOptions": {
 		"module": "nodenext",
 		"target": "esnext",

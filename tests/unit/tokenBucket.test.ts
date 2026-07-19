@@ -1,14 +1,53 @@
-import request from "supertest";
-import { describe, expect, it } from "vitest";
-import app from "../../src/app.js";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import store, { clear } from "../../src/repositories/memoryStore.repository.js";
+import createTokenBucket from "../../src/services/tokenBucket.service.js";
 
-describe("GET /", () => {
-	it("returns hello", async () => {
-		const res = await request(app).get("/");
 
-		expect(res.status).toBe(200);
-		expect(res.body).toEqual({
-			message: "Hello",
-		});
-	});
+beforeEach(async () => {
+	clear();
+})
+
+it("should allow request when tokens are available", () => {
+	const bucket = createTokenBucket({ capacity: 100, refillRate: 100 }, store);
+
+	expect(bucket.check("/api").allowed).to.be.true;
 });
+
+it("should not allow request when tokens are unavailable", () => {
+	const bucket = createTokenBucket({ capacity: 1, refillRate: 0 }, store);
+
+	expect(bucket.check("/api").allowed).to.be.true;
+	expect(bucket.check("/api").allowed).to.be.false;
+});
+
+it("should refill requests according to refillRate", async () => {
+	vi.useFakeTimers({toFake: ["Date"]});
+	const bucket = createTokenBucket({ capacity: 1, refillRate: 1 }, store);
+
+	expect(bucket.check("/api").allowed).to.be.true;
+	expect(bucket.check("/api").allowed).to.be.false;
+
+	// Wait For Refill
+	await vi.advanceTimersByTimeAsync(1000);	
+
+	expect(bucket.check("/api").allowed).to.be.true;
+
+	vi.useRealTimers();
+});
+
+it("should refill requests till capacity", async () => {
+	vi.useFakeTimers({toFake: ["Date"]});
+	const bucket = createTokenBucket({ capacity: 2, refillRate: 1 }, store);
+
+	expect(bucket.check("/api").allowed).to.be.true;
+	expect(bucket.check("/api").allowed).to.be.true;
+
+	// Wait For Refill [wait for 3s but capped at 2]
+	await vi.advanceTimersByTimeAsync(3000);
+
+	expect(bucket.check("/api").remaining).to.be.equal(1);
+
+	vi.useRealTimers();
+});
+
+

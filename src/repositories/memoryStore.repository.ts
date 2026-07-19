@@ -1,20 +1,28 @@
-const store: Record<string, { tokens: number; lastUpdated: number }> = {};
+import { logger } from "../config/logger.js";
 
-export function getBucket(key: string): {
+let inMemoryStore: Record<string, { tokens: number; lastUpdated: number }> =
+	{};
+
+export function get(key: string): {
 	tokens: number;
 	lastUpdated: number;
-} {
-	let bucket = store[key];
-	if (!bucket) {
-		store[key] = { tokens: 100, lastUpdated: Date.now() };
-		bucket = store[key];
-	}
+} | undefined {
+	logger.debug(`Getting key:${key} from inMemoryStore`);
+	const bucket = inMemoryStore[key];
 	return bucket;
 }
 
-export function setBucket(
+export function set(
 	key: string,
 	bucket: { tokens: number; lastUpdated: number },
 ): void {
-	store[key] = bucket;
+	logger.debug(`Setting key:${key} in inMemoryStore`);
+	inMemoryStore[key] = bucket;
 }
+
+export function clear() {
+	inMemoryStore = {};
+}
+
+const store = { get, set };
+export default store;

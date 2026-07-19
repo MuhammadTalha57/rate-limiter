@@ -1,3 +1,5 @@
+import { logger } from "../config/logger.js";
+
 interface Store {
 	get(key: string): { tokens: number; lastUpdated: number } | undefined;
 	set(key: string, bucket: { tokens: number; lastUpdated: number }): void;
@@ -11,6 +13,9 @@ interface BucketConfig {
 export default function createTokenBucket(config: BucketConfig, store: Store) {
 	return {
 		check(key: string): { allowed: boolean; remaining: number } {
+			logger.info(`[Token Bucket] checking key:${key}`);
+			let result: {allowed: boolean, remaining: number}; 
+
 			let bucket = store.get(key);
 			if (!bucket) {
 				bucket = { tokens: config.capacity, lastUpdated: Date.now() };
@@ -24,17 +29,22 @@ export default function createTokenBucket(config: BucketConfig, store: Store) {
 				config.capacity,
 				bucket.tokens + config.refillRate * elapsedSeconds,
 			);
+			bucket.tokens = newTokenCount;
 
-			if (newTokenCount >= 1) {
+			if (bucket.tokens >= 1) {
 				// Consume
 				bucket.tokens--;
 				bucket.lastUpdated += elapsedSeconds * 1000;
 				store.set(key, bucket);
 
-				return { allowed: true, remaining: bucket.tokens };
+				
+				result = { allowed: true, remaining: bucket.tokens };
 			} else {
-				return { allowed: false, remaining: 0 };
+				result =  { allowed: false, remaining: 0 };
 			}
+
+			logger.info(`[Token Bucket] Checked key:${key} result:${result}`);
+			return result;
 		},
 	};
 }
