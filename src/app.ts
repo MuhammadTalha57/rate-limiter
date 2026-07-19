@@ -14,6 +14,6 @@ app.use(express.json());
 
 app.use("", checkRouter);
 
-app.get("/health", (req: Request, res: Response) => res.json({ ok: true }));
+app.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
 
 export default app;

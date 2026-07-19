@@ -7,3 +7,8 @@ export interface BucketConfig {
 	capacity: number;
 	refillRate: number;
 }
+
+export interface Config {
+	tokenBucket: BucketConfig;
+	storeType: string;
+}

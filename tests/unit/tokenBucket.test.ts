@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import store, { clear } from "../../src/repositories/memoryStore.repository.js";
 import createTokenBucket from "../../src/services/tokenBucket.service.js";
 
