@@ -5,9 +5,9 @@ export default function createTokenBucket(config: BucketConfig, store: Store) {
 	return {
 		check(
 			key: string,
-			overrides: Partial<BucketConfig>,
+			overrides: Partial<BucketConfig> = {},
 		): { allowed: boolean; remaining: number } {
-			logger.info(`[Token Bucket] checking key:${key}`);
+			logger.info(`[Token Bucket] checking key:${key} ${overrides.refillRate}`);
 			const capacity = overrides.capacity ?? config.capacity;
 			const refillRate = overrides.refillRate ?? config.refillRate;
 

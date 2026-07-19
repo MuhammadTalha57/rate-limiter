@@ -10,6 +10,8 @@ export const limiter = createTokenBucket(defaultConfig.tokenBucket, store);
 
 const app = express();
 
+app.use(express.json());
+
 app.use("", checkRouter);
 
 app.get("/health", (req: Request, res: Response) => res.json({ ok: true }));
