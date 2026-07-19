@@ -1,6 +1,6 @@
 {
 	"name": "rate-limiter",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "A generic and scalable rate limiter",
 	"license": "ISC",
 	"author": "Muhammad Talha",
@@ -22,6 +22,7 @@
 		"lint:fix": "biome check . --write"
 	},
 	"dependencies": {
+		"@upstash/redis": "^1.38.0",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
 		"pino": "^10.3.1",
