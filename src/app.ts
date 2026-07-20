@@ -3,8 +3,8 @@ import express from "express";
 import "dotenv/config";
 import { defaultConfig } from "./config/defaultConfig.js";
 import { logger } from "./config/logger.js";
-import store from "./repositories/memoryStore.repository.js";
 import { redis } from "./repositories/redisStore.repository.js";
+import store from "./repositories/store.repository.js";
 import { checkRouter } from "./routes/check.route.js";
 import createTokenBucket from "./services/tokenBucket.service.js";
 

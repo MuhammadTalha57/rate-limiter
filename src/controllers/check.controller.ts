@@ -10,7 +10,7 @@ export async function checkController(req: Request, res: Response) {
 	}
 	logger.info(`Handling check for key:${key}`);
 
-	const result = limiter.check(key, { ...config.tokenBucket });
+	const result = await limiter.check(key, { ...config.tokenBucket });
 
 	res.json({ ...result }).send();
 }
