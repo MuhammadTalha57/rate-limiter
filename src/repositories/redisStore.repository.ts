@@ -1,33 +1,50 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Redis } from "@upstash/redis";
-import { logger } from "../config/logger.js";
-import type { Bucket, Store } from "../types.js";
+import type { Bucket, Config, Store } from "../types.js";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const TOKEN_BUCKET_SCRIPT = readFileSync(
+	join(__dirname, "../scripts/redisTokenBucket.lua"),
+	"utf-8",
+);
 export const redis = Redis.fromEnv();
 
 class RedisStore implements Store {
 	async get(key: string) {
-		logger.debug(`Getting key:${key} from redis`);
-		const bucketStr: string | null = await redis.get(key);
+		const bucket = await redis.get<Bucket>(key);
 
-		if (!bucketStr) {
+		if (!bucket) {
 			return undefined;
 		}
 
-		try {
-			return JSON.parse(bucketStr) as Bucket;
-		} catch (e) {
-			logger.error(`Failed to parse redis key: ${key}\n${e}`);
-			return undefined;
-		}
+		return bucket;
 	}
 
 	async set(key: string, bucket: Bucket) {
-		logger.debug(`Setting key:${key} in inMemoryStore`);
-		await redis.set(key, bucket);
+		await redis.set(key, JSON.stringify(bucket));
 	}
 
 	async del(key: string) {
 		await redis.del(key);
+	}
+
+	async check(
+		key: string,
+		config: Config,
+	): Promise<{ allowed: boolean; remaining: number }> {
+		const now = Date.now();
+		const result = await redis.eval(
+			TOKEN_BUCKET_SCRIPT,
+			[key],
+			[
+				config.tokenBucket.capacity.toString(),
+				config.tokenBucket.refillRate.toString(),
+				now.toString(),
+			],
+		);
+		return result as { allowed: boolean; remaining: number };
 	}
 }
 
