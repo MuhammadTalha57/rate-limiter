@@ -1,45 +1,33 @@
 import { logger } from "../config/logger.js";
-import type { BucketConfig, Store } from "../types.js";
+import type { BucketConfig, Config, Store } from "../types.js";
 
-export default function createTokenBucket(config: BucketConfig, store: Store) {
+export default function createTokenBucket(
+	bucketConfig: BucketConfig,
+	store: Store,
+) {
 	return {
 		async check(
 			key: string,
 			overrides: Partial<BucketConfig> = {},
 		): Promise<{ allowed: boolean; remaining: number }> {
 			logger.info(`[Token Bucket] checking key:${key} ${overrides.refillRate}`);
-			const capacity = overrides.capacity ?? config.capacity;
-			const refillRate = overrides.refillRate ?? config.refillRate;
 
-			let result: { allowed: boolean; remaining: number };
+			const capacity = overrides.capacity ?? bucketConfig.capacity;
+			const refillRate = overrides.refillRate ?? bucketConfig.refillRate;
 
-			let bucket = await store.get(key);
-			if (!bucket) {
-				bucket = { tokens: capacity, lastUpdated: Date.now() };
-				store.set(key, bucket);
-			}
+			const config: Config = {
+				storeType: process.env.STORE_TYPE ?? "Redis",
+				tokenBucket: {
+					capacity,
+					refillRate,
+				},
+			};
 
-			const elapsedSeconds = Math.floor(
-				(Date.now() - bucket.lastUpdated) / 1000,
+			const result = await store.check(key, config);
+
+			logger.info(
+				`[Token Bucket] Checked key:${key} result:${result.allowed}, ${result.remaining}`,
 			);
-			const newTokenCount = Math.min(
-				capacity,
-				bucket.tokens + refillRate * elapsedSeconds,
-			);
-			bucket.tokens = newTokenCount;
-
-			if (bucket.tokens >= 1) {
-				// Consume
-				bucket.tokens--;
-				bucket.lastUpdated += elapsedSeconds * 1000;
-				store.set(key, bucket);
-
-				result = { allowed: true, remaining: bucket.tokens };
-			} else {
-				result = { allowed: false, remaining: 0 };
-			}
-
-			logger.info(`[Token Bucket] Checked key:${key} result:${result}`);
 			return result;
 		},
 	};
