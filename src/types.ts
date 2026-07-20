@@ -2,6 +2,10 @@ export interface Store {
 	get(key: string): Promise<Bucket | undefined>;
 	set(key: string, bucket: Bucket): Promise<void>;
 	del(key: string): Promise<void>;
+	check(
+		key: string,
+		config: Config,
+	): Promise<{ allowed: boolean; remaining: number }>;
 }
 
 export type Bucket = {
