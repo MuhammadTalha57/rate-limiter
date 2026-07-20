@@ -7,14 +7,14 @@ export interface Store {
 export type Bucket = {
 	tokens: number;
 	lastUpdated: number;
-}	
+};
 
 export type BucketConfig = {
 	capacity: number;
 	refillRate: number;
-}
+};
 
 export type Config = {
 	tokenBucket: BucketConfig;
 	storeType: string;
-}
+};
