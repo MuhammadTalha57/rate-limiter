@@ -1,29 +1,24 @@
 import { logger } from "../config/logger.js";
+import type { Bucket, Store } from "../types.js";
 
-let inMemoryStore: Record<string, { tokens: number; lastUpdated: number }> = {};
+const inMemoryStore: Record<string, { tokens: number; lastUpdated: number }> =
+	{};
 
-export function get(key: string):
-	| {
-			tokens: number;
-			lastUpdated: number;
-	  }
-	| undefined {
-	logger.debug(`Getting key:${key} from inMemoryStore`);
-	const bucket = inMemoryStore[key];
-	return bucket;
+class MemoryStore implements Store {
+	async get(key: string) {
+		logger.debug(`Getting key:${key} from inMemoryStore`);
+		const bucket = inMemoryStore[key];
+		return bucket;
+	}
+
+	async set(key: string, bucket: Bucket) {
+		logger.debug(`Setting key:${key} in inMemoryStore`);
+		inMemoryStore[key] = bucket;
+	}
+
+	async del(key: string) {
+		delete inMemoryStore[key];
+	}
 }
 
-export function set(
-	key: string,
-	bucket: { tokens: number; lastUpdated: number },
-): void {
-	logger.debug(`Setting key:${key} in inMemoryStore`);
-	inMemoryStore[key] = bucket;
-}
-
-export function clear() {
-	inMemoryStore = {};
-}
-
-const store = { get, set };
-export default store;
+export default MemoryStore;

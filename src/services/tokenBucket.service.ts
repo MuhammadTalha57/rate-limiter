@@ -3,17 +3,17 @@ import type { BucketConfig, Store } from "../types.js";
 
 export default function createTokenBucket(config: BucketConfig, store: Store) {
 	return {
-		check(
+		async check(
 			key: string,
 			overrides: Partial<BucketConfig> = {},
-		): { allowed: boolean; remaining: number } {
+		): Promise<{ allowed: boolean; remaining: number }> {
 			logger.info(`[Token Bucket] checking key:${key} ${overrides.refillRate}`);
 			const capacity = overrides.capacity ?? config.capacity;
 			const refillRate = overrides.refillRate ?? config.refillRate;
 
 			let result: { allowed: boolean; remaining: number };
 
-			let bucket = store.get(key);
+			let bucket = await store.get(key);
 			if (!bucket) {
 				bucket = { tokens: capacity, lastUpdated: Date.now() };
 				store.set(key, bucket);
