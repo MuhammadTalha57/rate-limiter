@@ -15,7 +15,10 @@ export default function createRateLimiter(store: Store, defaultConfig: Config) {
 					overrides.tokenBucket?.refillRate ??
 					defaultConfig.tokenBucket.refillRate;
 
-				return await store.checkWithTokenBucket(key, { capacity, refillRate });
+				return await store.checkWithTokenBucket(key, {
+					capacity,
+					refillRate,
+				});
 			} else {
 				const windowSize =
 					overrides.slidingWindow?.windowSize ??

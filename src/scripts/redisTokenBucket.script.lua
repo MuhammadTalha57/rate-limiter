@@ -1,7 +1,7 @@
 -- KEYS[1] = the bucket key
 -- ARGV[1] = capacity
 -- ARGV[2] = refillRate
--- ARGV[3] = now (ms, passed in from Node so both sides agree on "now")
+-- ARGV[3] = now (ms, passed in from Node)
 
 local key = KEYS[1]
 local capacity = tonumber(ARGV[1])
@@ -39,4 +39,3 @@ end
 redis.call("SET", key, cjson.encode({tokens = remaining, lastUpdated = lastUpdated}))
 
 return allowed
--- return cjson.encode({allowed = allowed, remaining = remaining})

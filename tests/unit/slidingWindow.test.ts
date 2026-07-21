@@ -10,10 +10,10 @@ beforeEach(async () => {
 it("should allow request when requests are under maxRequests", async () => {
 	const overrides: Partial<Config> = {
 		algorithm: "slidingWindow",
-        slidingWindow: {
-            windowSize: 1 * 60 * 1000,
-            maxRequests: 100,
-        }
+		slidingWindow: {
+			windowSize: 1 * 60 * 1000,
+			maxRequests: 100,
+		},
 	};
 	const result = await limiter.check("/api/v1/v1", overrides);
 	expect(result).to.be.true;

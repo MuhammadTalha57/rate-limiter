@@ -9,9 +9,9 @@ export async function checkController(req: Request, res: Response) {
 	if (!key) {
 		res.sendStatus(400);
 	}
-	logger.info(`Handling check for key:${key}`);
+	logger.info(`Checking key:${key}`);
 
 	const result = await limiter.check(key, { ...overrides });
-	
+
 	res.json({ allowed: result }).send();
 }

@@ -2,13 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Redis } from "@upstash/redis";
-import type {
-	Bucket,
-	BucketConfig,
-	Config,
-	SlidingWindowConfig,
-	Store,
-} from "../types.js";
+import type { BucketConfig, SlidingWindowConfig, Store } from "../types.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TOKEN_BUCKET_SCRIPT = readFileSync(
@@ -22,39 +16,9 @@ const SLIDING_WINDOW_SCRIPT = readFileSync(
 export const redis = Redis.fromEnv();
 
 class RedisStore implements Store {
-	async get(key: string) {
-		const bucket = await redis.get<Bucket>(key);
-
-		if (!bucket) {
-			return undefined;
-		}
-
-		return bucket;
-	}
-
-	async set(key: string, bucket: Bucket) {
-		await redis.set(key, JSON.stringify(bucket));
-	}
-
+	// Used for testing
 	async del(key: string) {
 		await redis.del(key);
-	}
-
-	async check(
-		key: string,
-		config: Config,
-	): Promise<{ allowed: boolean; remaining: number }> {
-		const now = Date.now();
-		const result = await redis.eval(
-			TOKEN_BUCKET_SCRIPT,
-			[key],
-			[
-				config.tokenBucket.capacity.toString(),
-				config.tokenBucket.refillRate.toString(),
-				now.toString(),
-			],
-		);
-		return result as { allowed: boolean; remaining: number };
 	}
 
 	async checkWithTokenBucket(

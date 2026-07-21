@@ -1,11 +1,5 @@
 export interface Store {
-	get(key: string): Promise<Bucket | SlidingWindow | undefined>;
-	set(key: string, bucket: Bucket): Promise<void>;
-	del(key: string): Promise<void>;
-	check(
-		key: string,
-		config: Config,
-	): Promise<{ allowed: boolean; remaining: number }>;
+	del(key: string): Promise<void>; // Used For Tests
 	checkWithTokenBucket(key: string, config: BucketConfig): Promise<boolean>;
 	checkWithSlidingWindow(
 		key: string,
@@ -30,7 +24,7 @@ export type SlidingWindow = {
 };
 
 export type SlidingWindowConfig = {
-	windowSize: number; // In ms
+	windowSize: number;
 	maxRequests: number;
 };
 
