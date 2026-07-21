@@ -1,7 +1,13 @@
-export const defaultConfig = {
+import type { Config } from "../types.js";
+
+export const defaultConfig: Config = {
+	algorithm: "tokenBucket",
 	tokenBucket: {
 		capacity: 100,
 		refillRate: 10,
 	},
-	store: process.env.STORE_TYPE || "memory",
+	slidingWindow: {
+		windowSize: 1 * 60 * 100, // 1 Minute
+		maxRequests: 100,
+	},
 };
