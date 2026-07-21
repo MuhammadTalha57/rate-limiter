@@ -38,4 +38,5 @@ end
 
 redis.call("SET", key, cjson.encode({tokens = remaining, lastUpdated = lastUpdated}))
 
-return cjson.encode({allowed = allowed, remaining = remaining})
+return allowed
+-- return cjson.encode({allowed = allowed, remaining = remaining})
