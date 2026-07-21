@@ -6,9 +6,9 @@ import { logger } from "./config/logger.js";
 import { redis } from "./repositories/redisStore.repository.js";
 import store from "./repositories/store.repository.js";
 import { checkRouter } from "./routes/check.route.js";
-import createTokenBucket from "./services/tokenBucket.service.js";
+import createRateLimiter from "./services/rateLimiter.service.js";
 
-export const limiter = createTokenBucket(defaultConfig.tokenBucket, store);
+export const limiter = createRateLimiter(store, defaultConfig);
 
 const app = express();
 
