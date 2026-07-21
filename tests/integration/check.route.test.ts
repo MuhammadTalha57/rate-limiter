@@ -27,3 +27,27 @@ it("should rate limit requests according to tokens left", async () => {
 	expect(result1.body.allowed).toBe(true);
 	expect(result2.body.allowed).toBe(false);
 });
+
+it("should rate limit requests according to window requests", async () => {
+	await store.del("u1");
+
+	const overrides: Partial<Config> = {
+		algorithm: "slidingWindow",
+		slidingWindow: {
+			windowSize: 1 * 60 * 1000,
+			maxRequests: 1,
+		},
+	};
+	const result1 = await request(app).post("/check").send({
+		key: "u1",
+		overrides,
+	});
+
+	const result2 = await request(app).post("/check").send({
+		key: "u1",
+		overrides,
+	});
+
+	expect(result1.body.allowed).toBe(true);
+	expect(result2.body.allowed).toBe(false);
+});

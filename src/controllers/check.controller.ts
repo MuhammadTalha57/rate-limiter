@@ -12,6 +12,6 @@ export async function checkController(req: Request, res: Response) {
 	logger.info(`Handling check for key:${key}`);
 
 	const result = await limiter.check(key, { ...overrides });
-	console.log(`RECEIVED: ${result}`);
+	
 	res.json({ allowed: result }).send();
 }
