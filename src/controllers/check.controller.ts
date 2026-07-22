@@ -8,6 +8,7 @@ export async function checkController(req: Request, res: Response) {
 		req.body;
 	if (!key) {
 		res.sendStatus(400);
+		return;
 	}
 	logger.info(`Checking key:${key}`);
 

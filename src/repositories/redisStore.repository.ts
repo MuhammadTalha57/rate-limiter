@@ -43,7 +43,11 @@ class RedisStore implements Store {
 		const result = await redis.eval(
 			SLIDING_WINDOW_SCRIPT,
 			[key],
-			[config.windowSize, config.maxRequests, Date.now().toString()],
+			[
+				config.windowSize.toString(),
+				config.maxRequests.toString(),
+				Date.now().toString(),
+			],
 		);
 
 		if (result) return true;

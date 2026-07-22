@@ -8,6 +8,7 @@ import store from "./repositories/store.repository.js";
 import { checkRouter } from "./routes/check.route.js";
 import createRateLimiter from "./services/rateLimiter.service.js";
 
+const STORE_TYPE = process.env.STORE_TYPE;
 export const limiter = createRateLimiter(store, defaultConfig);
 
 const app = express();
@@ -20,21 +21,23 @@ app.get("/health", async (_req: Request, res: Response) => {
 	let isHealthy = true;
 
 	// Check Redis Connection
-	try {
-		const pong = await redis.ping();
-		isHealthy = pong === "PONG";
-	} catch (e) {
-		isHealthy = false;
-		logger.error(`[Health] System is unhealthy and down: ${e}`);
-		res.status(503).json({ ok: isHealthy, redis: "DOWN" });
+	if (STORE_TYPE === "Redis") {
+		try {
+			const pong = await redis.ping();
+			isHealthy = pong === "PONG";
+		} catch (e) {
+			isHealthy = false;
+			logger.error(`[Health] System is unhealthy and down: ${e}`);
+			res.status(503).json({ ok: isHealthy });
+		}
 	}
 
 	if (isHealthy) {
-		logger.info(`[Health] System is health and running.`);
-		res.status(200).json({ ok: isHealthy, redis: "UP" });
+		logger.info(`[Health] System is healthy and running.`);
+		res.status(200).json({ ok: isHealthy });
 	} else {
 		logger.error(`[Health] System is unhealthy and down.`);
-		res.status(503).json({ ok: isHealthy, redis: "DOWN" });
+		res.status(503).json({ ok: isHealthy });
 	}
 });
 

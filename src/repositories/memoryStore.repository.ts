@@ -51,7 +51,7 @@ class MemoryStore implements Store {
 		if (bucket.tokens >= 1) {
 			// Consume
 			bucket.tokens--;
-			this.set(key, bucket);
+			await this.set(key, bucket);
 
 			result = { allowed: true, remaining: bucket.tokens };
 		} else {
@@ -78,7 +78,9 @@ class MemoryStore implements Store {
 		window.timestamps = window.timestamps.filter((ts) => ts > start);
 
 		if (window.timestamps.length < maxRequests) {
-			window.timestamps.push(now);
+			if (inMemoryStore[key]?.type === "SlidingWindow") {
+				inMemoryStore[key].timestamps.push(now);
+			}
 			return true;
 		} else {
 			return false;
